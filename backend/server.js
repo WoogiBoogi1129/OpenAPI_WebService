@@ -15,6 +15,23 @@ const airCache = new Map();
 
 app.use(cors());
 
+const buildMockAirQuality = (region) => {
+  const seed = [...region].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const base = (seed % 20) + 10;
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+  return {
+    stationName: `${region} 관측소`,
+    dataTime: new Date().toISOString(),
+    pm10: clamp(base * 2, 10, 120),
+    pm25: clamp(base, 5, 80),
+    o3: clamp(base / 100, 0.01, 0.2),
+    no2: clamp(base / 120, 0.01, 0.15),
+    so2: clamp(base / 200, 0.01, 0.1),
+    co: clamp(base / 10, 0.1, 1.5)
+  };
+};
+
 app.get('/api/air', async (req, res) => {
   const region = req.query.region;
   if (!region) {
@@ -23,7 +40,12 @@ app.get('/api/air', async (req, res) => {
 
   const apiKey = process.env.AIR_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: 'AIR_API_KEY is not configured' });
+    return res.json({
+      region,
+      source: 'mock',
+      cached: false,
+      data: buildMockAirQuality(region)
+    });
   }
 
   const cached = airCache.get(region);
