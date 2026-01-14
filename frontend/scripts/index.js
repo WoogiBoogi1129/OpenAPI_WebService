@@ -47,12 +47,8 @@ const formatNumber = (value, digits = 1) => {
 const clampScore = (value) => Math.max(0, Math.min(100, value));
 
 const buildAirQualitySummary = (payload) => {
-  const measurement =
-    payload?.results?.[0]?.measurements?.find(
-      (item) => item.parameter === "pm25"
-    ) ?? payload?.results?.[0]?.measurements?.[0];
-  const pm25 = measurement?.value;
-  const unit = measurement?.unit ?? "µg/m³";
+  const pm25 = payload?.pm25;
+  const unit = "µg/m³";
 
   if (!Number.isFinite(pm25)) {
     return {
