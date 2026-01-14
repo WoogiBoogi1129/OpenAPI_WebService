@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const dotenv = require('dotenv');
+const cors = require('cors');
 
 dotenv.config();
 
@@ -8,6 +9,8 @@ const app = express();
 const port = process.env.PORT || 4000;
 const cacheTtlMs = Number(process.env.AIR_CACHE_TTL_MS) || 300000;
 const airCache = new Map();
+
+app.use(cors());
 
 app.get('/api/air', async (req, res) => {
   const region = req.query.region;
