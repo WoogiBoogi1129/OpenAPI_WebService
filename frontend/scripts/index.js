@@ -205,10 +205,21 @@ const inputPanel = InputPanel({
       const response = await fetch(
         `${API_BASE_URL}/api/air?region=${encodeURIComponent(trimmedRegion)}`
       );
-      const payload = await response.json();
+      let payload = null;
+      try {
+        payload = await response.json();
+      } catch (parseError) {
+        payload = null;
+      }
       if (!response.ok) {
         // HTTP 응답이 200대가 아니면 에러 처리합니다.
-        throw new Error(payload?.error || "대기질 데이터를 가져오지 못했습니다.");
+        const errorMessage =
+          typeof payload?.error === "string"
+            ? payload.error
+            : payload?.error?.message ||
+              response.statusText ||
+              "대기질 데이터를 가져오지 못했습니다.";
+        throw new Error(errorMessage);
       }
 
       const source = payload?.source;
