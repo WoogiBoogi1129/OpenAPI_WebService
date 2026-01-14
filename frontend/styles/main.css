@@ -67,6 +67,35 @@ p {
   margin: 0 0 16px;
 }
 
+/* 카드 타이틀과 배지를 나란히 보여주는 헤더입니다. */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* 대기질 데이터 출처 배지 스타일입니다. */
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.source-badge.live {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+.source-badge.mock {
+  background: rgba(245, 158, 11, 0.18);
+  color: #b45309;
+}
+
 /* 입력 라벨을 굵게 표시해 가독성을 높입니다. */
 label {
   display: block;

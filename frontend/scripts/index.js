@@ -211,8 +211,19 @@ const inputPanel = InputPanel({
         throw new Error(payload?.error || "대기질 데이터를 가져오지 못했습니다.");
       }
 
+      const source = payload?.source;
+      const isMock = source === "mock";
+      const sourceLabel = isMock
+        ? "모의 데이터"
+        : source === "data.go.kr"
+        ? "data.go.kr"
+        : "";
+
       // 각 카드에 들어갈 요약 정보를 계산합니다.
       const airSummary = buildAirQualitySummary(payload.data);
+      const airDescription = isMock
+        ? `${airSummary.description} (모의 데이터)`
+        : airSummary.description;
       const carbonSummary = buildCarbonSummary(values);
       const totalSummary = buildTotalScoreSummary(
         airSummary.score,
@@ -223,8 +234,10 @@ const inputPanel = InputPanel({
       resultsStack.replaceChildren(
         AirQualityCard({
           status: airSummary.status,
-          description: airSummary.description,
+          description: airDescription,
           indexLabel: "대기질 지수",
+          sourceLabel,
+          isMock,
         }),
         CarbonCard({
           emission: carbonSummary.emissionLabel,
