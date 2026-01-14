@@ -62,6 +62,7 @@ app.get('/api/air', async (req, res) => {
     // 키가 없으면 mock 데이터를 사용해 정상 응답처럼 보여줍니다.
     return res.json({
       region,
+      // source는 "mock" 또는 "data.go.kr" 문자열로 구분합니다.
       source: 'mock',
       cached: false,
       data: buildMockAirQuality(region)
@@ -130,6 +131,7 @@ app.get('/api/air', async (req, res) => {
     // 응답에 포함될 기본 payload입니다.
     const payload = {
       region,
+      // source는 "mock" 또는 "data.go.kr" 문자열로 구분합니다.
       source: 'data.go.kr',
       cached: false,
       data: normalized
