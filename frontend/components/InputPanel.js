@@ -6,6 +6,7 @@
  * - region: string (default region value)
  * - distance: number|string (default distance in km)
  * - transport: string (default transport value)
+ * - regions: string[] (region options list)
  * - transports: Array<{ value: string, label: string }> (options list)
  * - onSubmit: (values: { region: string, distance: string, transport: string }) => void
  *
@@ -32,6 +33,25 @@ export function InputPanel({
   region = "",
   distance = "",
   transport = "walking",
+  regions = [
+    "서울",
+    "부산",
+    "대구",
+    "인천",
+    "광주",
+    "대전",
+    "울산",
+    "경기",
+    "강원",
+    "충북",
+    "충남",
+    "전북",
+    "전남",
+    "경북",
+    "경남",
+    "제주",
+    "세종",
+  ],
   transports = [
     { value: "walking", label: "도보" },
     { value: "bike", label: "자전거" },
@@ -60,12 +80,27 @@ export function InputPanel({
   regionLabel.htmlFor = "region";
   regionLabel.textContent = "지역";
 
-  const regionInput = document.createElement("input");
-  regionInput.id = "region";
-  regionInput.name = "region";
-  regionInput.type = "text";
-  regionInput.placeholder = "예: 서울";
-  regionInput.value = region;
+  const regionSelect = document.createElement("select");
+  regionSelect.id = "region";
+  regionSelect.name = "region";
+  regionSelect.required = true;
+
+  const placeholderOption = document.createElement("option");
+  placeholderOption.value = "";
+  placeholderOption.textContent = "지역 선택";
+  placeholderOption.disabled = true;
+  placeholderOption.selected = !regions.includes(region);
+  regionSelect.append(placeholderOption);
+
+  regions.forEach((regionName) => {
+    const option = document.createElement("option");
+    option.value = regionName;
+    option.textContent = regionName;
+    if (regionName === region) {
+      option.selected = true;
+    }
+    regionSelect.append(option);
+  });
 
   // 거리 입력 라벨과 입력창을 만듭니다.
   const distanceLabel = document.createElement("label");
@@ -107,7 +142,7 @@ export function InputPanel({
   // 폼 안에 라벨/입력/버튼을 순서대로 배치합니다.
   form.append(
     regionLabel,
-    regionInput,
+    regionSelect,
     distanceLabel,
     distanceInput,
     transportLabel,
@@ -121,7 +156,7 @@ export function InputPanel({
     if (typeof onSubmit === "function") {
       // 입력값을 객체로 묶어 콜백으로 전달합니다.
       onSubmit({
-        region: regionInput.value,
+        region: regionSelect.value,
         distance: distanceInput.value,
         transport: transportSelect.value,
       });

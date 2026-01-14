@@ -20,6 +20,26 @@ const cacheTtlMs = Number(process.env.AIR_CACHE_TTL_MS) || 300000;
 const airApiBaseUrl =
   process.env.AIR_API_BASE_URL ||
   'https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty';
+// 대기질 API에서 허용하는 시도 이름 목록입니다.
+const allowedSidoNames = [
+  '서울',
+  '부산',
+  '대구',
+  '인천',
+  '광주',
+  '대전',
+  '울산',
+  '경기',
+  '강원',
+  '충북',
+  '충남',
+  '전북',
+  '전남',
+  '경북',
+  '경남',
+  '제주',
+  '세종'
+];
 // 지역별 응답을 잠시 저장해두는 메모리 캐시(Map)입니다.
 const airCache = new Map();
 
@@ -55,26 +75,33 @@ app.get('/api/air', async (req, res) => {
     // region이 없으면 400(Bad Request)을 반환합니다.
     return res.status(400).json({ error: 'region query parameter is required' });
   }
+  const trimmedRegion = String(region).trim();
+  if (!trimmedRegion) {
+    return res.status(400).json({ error: 'region query parameter is required' });
+  }
+  if (!allowedSidoNames.includes(trimmedRegion)) {
+    return res.status(400).json({ error: '지원하지 않는 지역' });
+  }
 
   // 실제 데이터 제공 API를 사용하려면 키가 필요합니다.
   const apiKey = process.env.AIR_API_KEY;
   if (!apiKey) {
     // 키가 없으면 mock 데이터를 사용해 정상 응답처럼 보여줍니다.
     return res.json({
-      region,
+      region: trimmedRegion,
       // source는 "mock" 또는 "data.go.kr" 문자열로 구분합니다.
       source: 'mock',
       cached: false,
-      data: buildMockAirQuality(region)
+      data: buildMockAirQuality(trimmedRegion)
     });
   }
 
   // 캐시에 값이 있으면 먼저 꺼내 봅니다.
-  const cached = airCache.get(region);
+  const cached = airCache.get(trimmedRegion);
   if (cached && cached.expiresAt > Date.now()) {
     // 캐시가 유효하면 API 호출 없이 바로 응답합니다.
     return res.json({
-      region,
+      region: trimmedRegion,
       source: 'data.go.kr',
       cached: true,
       cachedAt: cached.cachedAt,
@@ -90,7 +117,7 @@ app.get('/api/air', async (req, res) => {
         returnType: 'json',
         numOfRows: 1,
         pageNo: 1,
-        sidoName: region,
+        sidoName: trimmedRegion,
         ver: '1.0'
       }
     });
@@ -130,7 +157,7 @@ app.get('/api/air', async (req, res) => {
 
     // 응답에 포함될 기본 payload입니다.
     const payload = {
-      region,
+      region: trimmedRegion,
       // source는 "mock" 또는 "data.go.kr" 문자열로 구분합니다.
       source: 'data.go.kr',
       cached: false,
@@ -138,7 +165,7 @@ app.get('/api/air', async (req, res) => {
     };
 
     // 캐시에 저장해 다음 요청을 더 빠르게 처리합니다.
-    airCache.set(region, {
+    airCache.set(trimmedRegion, {
       cachedAt: new Date().toISOString(),
       expiresAt: Date.now() + cacheTtlMs,
       data: normalized
