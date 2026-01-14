@@ -2,21 +2,27 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
+    <!-- 모바일 화면에서도 잘 보이도록 뷰포트 설정 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>에코 모빌리티 점수</title>
+    <!-- 공통 스타일 시트를 연결 -->
     <link rel="stylesheet" href="./styles/main.css" />
   </head>
   <body>
+    <!-- 화면 전체를 감싸는 중앙 정렬 컨테이너 -->
     <div class="container">
       <header>
         <h1>에코 모빌리티 점수 계산기</h1>
         <p>지역, 이동 거리, 이동 수단을 입력하면 대기질과 탄소 배출을 종합한 점수를 확인할 수 있습니다.</p>
       </header>
 
+      <!-- 자바스크립트에서 동적으로 컴포넌트를 붙일 영역 -->
       <div id="app"></div>
+      <!-- 데모 페이지로 이동할 수 있는 안내 문구 -->
       <p class="demo-note">데모 페이지는 <a href="./pages/demo.html">/pages/demo</a>에서 확인할 수 있습니다.</p>
     </div>
 
+    <!-- 메인 화면 로직을 담당하는 모듈 스크립트 -->
     <script type="module" src="./scripts/index.js"></script>
   </body>
 </html>

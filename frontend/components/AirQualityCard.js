@@ -22,21 +22,26 @@ export function AirQualityCard({
   description = "현재 대기질이 안정적입니다.",
   indexLabel = "대기질 지수",
 } = {}) {
+  // 카드 영역을 감싸는 섹션을 만듭니다.
   const section = document.createElement("section");
   section.className = "card";
 
+  // 카드 상단에 표시될 제목을 만듭니다.
   const title = document.createElement("h2");
   title.className = "card-title";
   title.textContent = indexLabel;
 
+  // 대기질 상태(좋음/나쁨 등)를 보여주는 강조 텍스트입니다.
   const value = document.createElement("div");
   value.className = "score";
   value.textContent = status;
 
+  // 보조 설명 문구를 넣는 영역입니다.
   const hint = document.createElement("p");
   hint.className = "hint";
   hint.textContent = description;
 
+  // 제목, 값, 설명 순서로 카드에 붙입니다.
   section.append(title, value, hint);
   return section;
 }
